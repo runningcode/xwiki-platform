@@ -73,4 +73,10 @@ public class DefaultAuthenticationConfiguration implements AuthenticationConfigu
     {
         return configuration.getProperty("isAuthenticationSecurityEnabled", true);
     }
+
+    @Override
+    public String getAuthenticationService()
+    {
+        return this.configuration.getProperty("authService");
+    }
 }

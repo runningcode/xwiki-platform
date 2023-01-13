@@ -20,6 +20,7 @@
 package org.xwiki.security.authentication;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.stability.Unstable;
 
 /**
  * Configuration of the authentication properties.
@@ -53,5 +54,15 @@ public interface AuthenticationConfiguration
     default boolean isAuthenticationSecurityEnabled()
     {
         return true;
+    }
+
+    /**
+     * @return the hint of the configured authentication service
+     * @since 15.0RC1
+     */
+    @Unstable
+    default String getAuthenticationService()
+    {
+        return null;
     }
 }

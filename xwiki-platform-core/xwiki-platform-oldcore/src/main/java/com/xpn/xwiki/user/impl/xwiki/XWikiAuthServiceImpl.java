@@ -26,7 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.inject.Named;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -39,6 +41,7 @@ import org.securityfilter.filter.URLPatternMatcher;
 import org.securityfilter.realm.SimplePrincipal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xwiki.component.annotation.Component;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
@@ -60,8 +63,13 @@ import com.xpn.xwiki.web.Utils;
  *
  * @version $Id$
  */
+@Component
+@Named(XWikiAuthServiceImpl.HINT)
+@Singleton
 public class XWikiAuthServiceImpl extends AbstractXWikiAuthService
 {
+    public static final String HINT = "standard";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(XWikiAuthServiceImpl.class);
 
     private static final EntityReference USERCLASS_REFERENCE = new EntityReference("XWikiUsers", EntityType.DOCUMENT,

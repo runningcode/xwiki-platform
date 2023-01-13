@@ -21,9 +21,19 @@ package com.xpn.xwiki.user.api;
 
 import java.security.Principal;
 
+import org.xwiki.component.annotation.Role;
+
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 
+/**
+ * The main interface to implement for XWiki authenticators.
+ * <p>
+ * It's a component since 15.0RC1.
+ * 
+ * @version $Id$
+ */
+@Role
 public interface XWikiAuthService
 {
     XWikiUser checkAuth(XWikiContext context) throws XWikiException;

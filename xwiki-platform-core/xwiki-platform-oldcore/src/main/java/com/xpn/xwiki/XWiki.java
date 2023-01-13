@@ -5956,9 +5956,14 @@ public class XWiki implements EventListener
         this.groupService = groupService;
     }
 
-    private Class<? extends XWikiAuthService> getAuthServiceClass() throws ClassNotFoundException
+    private String getAuthServiceClassName()
     {
-        String authClass = getConfiguration().getProperty("xwiki.authentication.authclass");
+        return getConfiguration().getProperty("xwiki.authentication.authclass");
+    }
+
+    private Class<? extends XWikiAuthService> getAuthServiceClass(String configuredClassName) throws ClassNotFoundException
+    {
+        String authClass = configuredClassName;
         if (StringUtils.isEmpty(authClass)) {
             if (isLDAP()) {
                 authClass = "com.xpn.xwiki.user.impl.LDAP.XWikiLDAPAuthServiceImpl";
@@ -5988,19 +5993,22 @@ public class XWiki implements EventListener
             if (this.authService == null) {
                 LOGGER.info("Initializing AuthService...");
 
-                try {
-                    Class<? extends XWikiAuthService> authClass = getAuthServiceClass();
+                String configuredClassName = getAuthServiceClassName();
+                if (configuredClassName != null) {
+                    try {
+                        Class<? extends XWikiAuthService> authClass = getAuthServiceClass(configuredClassName);
 
-                    setAuthService(authClass);
-                } catch (Exception e) {
-                    LOGGER.warn("Failed to get the configured AuthService class, fallbacking on standard authenticator",
-                        e);
-
-                    this.authService = new XWikiAuthServiceImpl();
-
-                    if (LOGGER.isDebugEnabled()) {
-                        LOGGER.debug("Initialized AuthService {} using 'new'.", this.authService.getClass().getName());
+                        setAuthService(authClass);
+                    } catch (Exception e) {
+                        LOGGER.warn(
+                            "Failed to get the configured AuthService class, fallbacking on default authenticator service",
+                            e);
                     }
+                }
+
+                if (this.authService == null) {
+                    // Fallback on component system
+                    this.authService = Utils.getComponent(XWikiAuthService.class);
                 }
             }
 
@@ -7851,16 +7859,19 @@ public class XWiki implements EventListener
     {
         // Skip it if:
         // * the authenticator was not yet initialized
+        // * we are using the component based authenticator
         // * we are using the standard authenticator
         // * the event is not related to an install or uninstall job
-        if (this.authService == null || this.authService.getClass() == XWikiAuthServiceImpl.class
+        String configuredClassName = getAuthServiceClassName();
+        if (this.authService == null || configuredClassName == null
+            || this.authService.getClass() == XWikiAuthServiceImpl.class
             || (!event.getJobType().equals(InstallJob.JOBTYPE) && !event.getJobType().equals(UninstallJob.JOBTYPE))) {
             return;
         }
 
         try {
             // Get the class corresponding to the configuration
-            Class<? extends XWikiAuthService> authClass = getAuthServiceClass();
+            Class<? extends XWikiAuthService> authClass = getAuthServiceClass(configuredClassName);
 
             // If the class does not have the same reference anymore it means it's coming from a different classloader
             // which generally imply that it's coming from an extension which has been reloaded or upgraded

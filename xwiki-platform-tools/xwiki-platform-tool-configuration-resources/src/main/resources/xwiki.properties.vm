@@ -796,6 +796,12 @@ distribution.automaticStartOnWiki=$xwikiPropertiesAutomaticStartOnWiki
 #-# migration is executed.
 # security.migration.R140600000XWIKI19869.resetPassword = true
 
+#-# [Since 15.0]
+#-# The authentication service to use by default.
+#-# 
+#-# The default is:
+# security.authentication.authService=standard
+
 #-# [Since 14.6RC1]
 #-# [Since 14.4.3]
 #-# [Since 13.10.8]
